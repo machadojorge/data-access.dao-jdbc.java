@@ -63,5 +63,10 @@ public class Main {
         seller3.setName("Martha Wayne");
         sellerDao.update(seller3);
         System.out.println("Update");
+        System.out.println("==== End Test ====");
+
+        System.out.println("\n=== Test 8 : Update Seller===");
+        sellerDao.deleteById(11);
+        System.out.println("Delete Completed");
         }
 }
