@@ -2,6 +2,8 @@ package application;
 
 import java.util.Date;
 
+import model.dao.DaoFactory;
+import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
@@ -14,5 +16,9 @@ public class Main {
 
         Seller seller = new Seller(21,"bob", "bob@gmail.com", new Date(), 3000.0, dp1);
         System.out.println(seller.toString());
+
+        // this is a way to hide the implementation or do a injection dependency
+        SellerDao sellerDao = DaoFactory.creatSellerDao();
+        System.out.println();
     }
 }
