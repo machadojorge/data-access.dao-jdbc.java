@@ -1,6 +1,7 @@
 package model.dao;
 
 import db.DB;
+import model.daoImpl.DepartmentDaoJDBC;
 import model.daoImpl.SellerDaoJDBC;
 
 public class DaoFactory {
@@ -13,8 +14,9 @@ public class DaoFactory {
         return new SellerDaoJDBC(DB.getConnection());
     }
 
-//     public static DepartmentDao createDepartmentDao()
-//     {
-//         return new Department
-//     }
+    // This class returns a object for use to access all methodos to CRUD operations in the Table Department
+    public static DepartmentDao createDepartmentDao()
+    {
+        return new DepartmentDaoJDBC(DB.getConnection());
+    }
 }
