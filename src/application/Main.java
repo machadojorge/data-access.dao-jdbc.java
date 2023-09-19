@@ -36,6 +36,24 @@ public class Main {
         {
             System.out.println(obj);
         }
+         System.out.println("==== End Test ====");
 
+        System.out.println("\n=== Test 3 : Seller FindAll===");
+     
+        List<Seller> list2 = sellerDao.findAll();
+
+        for (Seller obj : list2)
+        {
+            System.out.println(obj);
+        }
+         System.out.println("==== End Test ====");
+
+
+        System.out.println("\n=== Test 5 : Inesert Seller===");
+     
+        Seller seller3 = new Seller( null, "Greg", "greg@gmail.com", new Date(), 4000.0,department);
+        sellerDao.insert(seller3);
+        System.out.println("Inserted! New id = " + seller3.getId());
+         System.out.println("==== End Test ====");
     }
 }
