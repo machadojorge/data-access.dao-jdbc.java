@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 import db.DB;
 import db.DBException;
@@ -64,18 +66,8 @@ public class SellerDaoJDBC implements SellerDao {
 
             if (rs.next()) // -> the rs returns for default the first position 0, we use o "rs.next()"" to veryfy if exists the position after the position 0, if the quary returns any value
             {
-                Department dep = new Department();
-                // this way we get the value returned from query and put this value in objects
-                dep.setId(rs.getInt("DepartmentId"));
-                dep.setName(rs.getString("DepName"));
-
-                Seller seller = new Seller();
-                seller.setId(rs.getInt("Id"));
-                seller.setName(rs.getString("Name"));
-                seller.setEmail(rs.getString("Email"));
-                seller.setBaseSalary(rs.getDouble("BaseSalary"));
-                seller.setBirthDate(rs.getDate("BirthDate"));
-                seller.setDepartement(dep);
+                Department dep = instanciateDepartment(rs);
+                Seller seller = instantiateSeller(rs, dep);
                 return seller;
             } 
             return null;
@@ -92,10 +84,87 @@ public class SellerDaoJDBC implements SellerDao {
 
     }
 
+    /// IMPORTANT ///
+    // these two method are mandatory to pass the information from the query result to class object for is possible work with this data
+    // thes methods are call in the function ""findById""" and returns the object class ready to use.
+    private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
+       Seller seller = new Seller();
+                seller.setId(rs.getInt("Id"));
+                seller.setName(rs.getString("Name"));
+                seller.setEmail(rs.getString("Email"));
+                seller.setBaseSalary(rs.getDouble("BaseSalary"));
+                seller.setBirthDate(rs.getDate("BirthDate"));
+                seller.setDepartement(dep);
+        return seller;
+    }
+
+
+    private Department instanciateDepartment(ResultSet rs) throws SQLException { // this throw declaration is importante because we pass the error to the method that call this function. this method implements the resolution of this exception
+        Department dep =  new Department();
+                // this way we get the value returned from query and put this value in objects
+                dep.setId(rs.getInt("DepartmentId"));
+                dep.setName(rs.getString("DepName"));
+                return dep;
+
+    }
+
+
     @Override
     public List<Seller> findAll() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    }
+
+
+    @Override
+    public List<Seller> findByDepartment(Department dep) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try{
+            st = conn.prepareStatement(
+                "SELECT seller.*,department.Name as DepName "
+                + "FROM seller INNER JOIN department "
+                + "ON seller.DepartmentId = department.Id "
+                + "WHERE DepartmentId = ? "
+                + "ORDER BY Name "
+                );
+            st.setInt(1, dep.getId());
+            rs = st.executeQuery();
+
+            // the data returned from DataBase is in table format, 
+            // we need convert this data to Objects from the classe that type of data
+
+            // in this case, we receive many elements, we need a while to read all this elements and put this elements an list of Sellers
+            // because, we search by depeartment, it's means, the department is the same.
+            List<Seller> list = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+
+            while (rs.next()) 
+            {
+                Department department = map.get(rs.getInt("DepartmentId"));
+                if (department == null)
+                {
+                    department = instanciateDepartment(rs);
+                    map.put(rs.getInt("DepartmentId"), department);
+                }
+
+                Seller seller = instantiateSeller(rs, department);
+                list.add(seller);
+              
+            } 
+
+           return list;
+        }catch (SQLException e)
+        {
+            throw new DBException(e.getMessage());
+        }
+        finally
+        {
+            DB.closeResultSet(rs);
+            DB.closeStatement(st);
+        }
+
     }
     
 }
