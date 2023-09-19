@@ -19,6 +19,9 @@ public class Main {
 
         // this is a way to hide the implementation or do a injection dependency
         SellerDao sellerDao = DaoFactory.creatSellerDao();
-        System.out.println();
+        // this is for test the query to the database
+        Seller sellerResult = sellerDao.findById(3);
+
+        System.out.println(sellerResult.toString());
     }
 }

@@ -15,7 +15,7 @@ public class DB {
     private static Connection connection = null;
 
     // creates a connection method
-    public static Connection getConnection() throws ClassNotFoundException
+    public static Connection getConnection() 
     {
   
         if (connection == null)
